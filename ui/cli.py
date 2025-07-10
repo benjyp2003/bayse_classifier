@@ -1,5 +1,5 @@
 
-class Ui:
+class CLI:
 
     @staticmethod
     def show_menu():

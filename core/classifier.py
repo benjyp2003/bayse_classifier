@@ -3,6 +3,9 @@ class Classifier:
 
     @staticmethod
     def classify_example(new_example, model):
+        """Calculate the posterior probabilities for each class
+        This involves multiplying the prior probability by the likelihood of the new example
+        given each class."""
         priors = model.priors
         likelihoods = model.likelihoods
         mult_results = {}
@@ -15,12 +18,8 @@ class Classifier:
                 prob = feature_probs.get(feature_value, 1)  # default to 1 if unseen (not ideal but keeps it simple)
                 mult_results[class_label] *= prob  # multiply P(X|C)
 
-        # Print the probability scores per class
-        # for c, p in mult_results.items():
-        #     print(f"{c}: {p:.6f}")
         if mult_results:
             predicted = max(mult_results, key=lambda k: mult_results[k])
-            # print("Predicted class:", predicted)
             return predicted
         else:
             print("No results to classify.")

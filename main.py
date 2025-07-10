@@ -1,4 +1,4 @@
-from services.manager import Manager
+from controller.manager import Manager
 
 
 def run():

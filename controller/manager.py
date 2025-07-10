@@ -1,28 +1,31 @@
-from services.UI import Ui
-from model.classifier import Classifier
-from data.get_raw_data import GetData
-from model.process_model import ModelProcessing
+from ui.cli import CLI
+from core.classifier import Classifier
+from data.loader import DataLoader
+from core.trainer import Trainer
 
 
 class Manager:
     def __init__(self):
+        """Initialize the Manager with core builder, current dataset, and current core."""
         self.__models = []
-        self.model_builder = ModelProcessing()
+        self.model_builder = Trainer()
         self.current_data_set = None
         self.current_model = {}
 
 
     def start(self):
+        """Start the main menu loop."""
         self.handle_menu_choice()
 
 
     def handle_menu_choice(self):
+        """Display menu and handle user choices for training, classifying, or exiting."""
         while True:
-            Ui.show_menu()
+            CLI.show_menu()
             choice = input('>>> ')
             match choice:
                 case '1':
-                   self.train_new_model()
+                    self.train_new_model()
 
                 case '2':
                     new_data = self.get_data_from_user()
@@ -33,7 +36,8 @@ class Manager:
                     print('Invalid choice.\n')
 
     def train_new_model(self):
-        data_set = GetData.get_raw_df(self.get_path())
+        """Prompt for dataset, split it, train a core, and check its accuracy."""
+        data_set = DataLoader.get_raw_df(self.get_path())
         self.current_data_set = data_set
         training_df, testing_df = self.split_the_data_set(data_set)
         model = self.model_builder.build_model(training_df)
@@ -42,22 +46,29 @@ class Manager:
 
     @staticmethod
     def get_path():
+        """Prompt the user to enter a file path and return it."""
         path = input('Enter file path: ')
         return path
 
     @staticmethod
     def split_the_data_set(df):
-        split_index = int(len(df) * 0.70)
-        training_df = df.iloc[:split_index]
-        checking_df = df.iloc[split_index:]
+        """
+        Randomly split the DataFrame into 70% training and 30% testing sets.
+        """
+        df_shuffled = df.sample(frac=1, random_state=420).reset_index(drop=True)  # Shuffle the DataFrame
+        split_index = int(len(df_shuffled) * 0.70)
+        training_df = df_shuffled.iloc[:split_index]
+        checking_df = df_shuffled.iloc[split_index:]
         return training_df, checking_df
 
     def send_new_data_for_classifying(self, new_data: dict):
+        """Classify new user-provided data using the current core."""
         Classifier.classify_example(new_data, self.current_model)
 
 
     @staticmethod
     def check_model_accuracy(model, test_df):
+        """Evaluate the core's accuracy on the test set and print the result."""
         correct = 0
         total = len(test_df)
         label_col = test_df.columns[-1]  # assuming last column is the label
@@ -75,6 +86,7 @@ class Manager:
 
 
     def get_data_from_user(self):
+        """Get from user values for each feature column and return as a dict."""
         df = self.current_data_set
         user_data = {}
         try:

@@ -1,13 +1,16 @@
-from model.NaiveBayesModel import NaiveBayesModel
-from model.classifier import Classifier
+from core.NaiveBayesModel import NaiveBayesModel
 
 
-class ModelProcessing:
+class Trainer:
 
     def build_model(self, df):
-
-        features = ModelProcessing.get_features_except_last(df)
-        target_class = ModelProcessing.get_target_class(df)
+        """
+        Builds a Naive Bayes core from the input DataFrame.
+        This function calculates prior probabilities and conditional probabilities
+        for each class and feature, using Laplace smoothing.
+        """
+        features = Trainer.get_features_except_last(df)
+        target_class = Trainer.get_target_class(df)
 
         # Step 1: Calculate prior probabilities P(C)
         class_priors = target_class.value_counts(normalize=True).to_dict()
@@ -38,10 +41,17 @@ class ModelProcessing:
 
     @staticmethod
     def get_target_class(df):
+        """
+        Extracts the target class column from the DataFrame.
+        The target class is assumed to be the last column.
+        """
         return df.iloc[:, -1]
 
     @staticmethod
     def get_features_except_last(df):
+        """
+        Extracts all feature columns from the DataFrame, excluding the target class.
+        """
         return df.iloc[:, :-1]
 
 

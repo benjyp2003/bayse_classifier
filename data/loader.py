@@ -1,6 +1,6 @@
 import pandas as pd
 
-class GetData:
+class DataLoader:
 
     @staticmethod
     def get_raw_df(path):

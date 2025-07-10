@@ -1,5 +1,6 @@
-from data.get_raw_data import GetData
 from model.NaiveBayesModel import NaiveBayesModel
+from model.classifier import Classifier
+
 
 class ModelProcessing:
 
@@ -43,7 +44,4 @@ class ModelProcessing:
     def get_features_except_last(df):
         return df.iloc[:, :-1]
 
-    @staticmethod
-    def check_accuracy(model, test_data):
-        pass
 

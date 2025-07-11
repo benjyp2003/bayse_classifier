@@ -3,6 +3,7 @@ class CLI:
 
     @staticmethod
     def show_menu():
+        print()
         print("=" * 40)
         print("|{:^38}|".format("MAIN MENU"))
         print("=" * 40)

@@ -6,8 +6,8 @@ class Classifier:
         """Calculate the posterior probabilities for each class
         This involves multiplying the prior probability by the likelihood of the new example
         given each class."""
-        priors = model.priors
-        likelihoods = model.likelihoods
+        priors = model['priors']
+        likelihoods = model['likelihoods']
         mult_results = {}
 
         for class_label in likelihoods:

@@ -1,3 +1,4 @@
+import requests
 from ui.cli import CLI
 from core.classifier import Classifier
 from data.loader import DataLoader
@@ -25,11 +26,12 @@ class Manager:
             choice = input('>>> ')
             match choice:
                 case '1':
-                    self.train_new_model()
+                    model, testing = self.train_new_model()
+                    self.check_model_accuracy(model, testing)
 
                 case '2':
-                    new_data = self.get_data_from_user()
-                    self.send_new_data_for_classifying(new_data)
+                        new_data = self.get_data_from_user()
+                        self.send_new_data_for_classifying(new_data)
                 case '3':
                     break
                 case _:
@@ -42,7 +44,7 @@ class Manager:
         training_df, testing_df = self.split_the_data_set(data_set)
         model = self.model_builder.build_model(training_df)
         self.current_model = model
-        self.check_model_accuracy(model, testing_df)
+        return model, testing_df
 
     @staticmethod
     def get_path():
@@ -63,7 +65,17 @@ class Manager:
 
     def send_new_data_for_classifying(self, new_data: dict):
         """Classify new user-provided data using the current core."""
-        Classifier.classify_example(new_data, self.current_model)
+        # Classifier.classify_example(new_data, self.current_model)
+        try:
+            response = requests.post("http://127.0.0.1:8000/classify", json=new_data)
+            response.raise_for_status()  # Raise an exception for HTTP errors
+            data = response.json()
+            if data.get("status") == "success":
+                print(f"Predicted Class: {data.get('predicted_class')}")
+            else:
+                print(f"Error: {data.get('message')}")
+        except requests.exceptions.RequestException as e:
+            print(f"An error occurred: {e}")
 
 
     @staticmethod

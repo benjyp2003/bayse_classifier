@@ -37,7 +37,7 @@ class Trainer:
                     smoothed_prob = (count + 1) / (total_count + num_unique_values)
                     likelihoods[class_label][col][val] = smoothed_prob
 
-        return NaiveBayesModel(class_priors, likelihoods)
+        return {'priors': class_priors, 'likelihoods': likelihoods}
 
     @staticmethod
     def get_target_class(df):
